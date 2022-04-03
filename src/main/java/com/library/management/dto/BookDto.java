@@ -31,12 +31,14 @@ public class BookDto {
     public BookDto() {}
 
     public BookDto(Book book) {
-        this.id = book.getId();
-        this.bookName = book.getBookName();
-        this.author = book.getAuthor();
-        this.description = book.getDescription();
-        this.purchaseDate = book.getPurchaseDate();
-        this.currentCount = book.getCurrentCount();
-        this.totalCount = book.getTotalCount();
+        if (book != null) {
+            this.id = book.getId();
+            this.bookName = book.getBookName();
+            this.author = book.getAuthor();
+            this.description = book.getDescription();
+            this.purchaseDate = book.getPurchaseDate();
+            this.currentCount = book.getCurrentCount();
+            this.totalCount = book.getTotalCount();
+        }
     }
 }

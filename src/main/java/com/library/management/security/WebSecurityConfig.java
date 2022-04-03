@@ -1,8 +1,10 @@
 package com.library.management.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.access.AccessDecisionManager;
@@ -39,6 +41,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private PermissionBasedVoter permissionBasedVoter;
 
+    @Value("${spring.profiles.active:}")
+    private String activeProfile;
+
     /**
      * This method configures security attributes.
      *
@@ -48,33 +53,41 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
-        // Disable CSRF (cross site request forgery)
-        http.cors().and().csrf().disable();
+        if (activeProfile.equalsIgnoreCase("local")) {
+            http.csrf().disable()
+                    .headers().contentSecurityPolicy("default-src 'self';").and()
+                    .and().authorizeRequests().anyRequest().permitAll();
+        } else {
 
-        // No session will be created or used by spring security
-        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+            // Disable CSRF (cross site request forgery)
+            http.cors().and().csrf().disable();
 
-        http.exceptionHandling().authenticationEntryPoint((req, rsp, e) -> rsp.sendError(HttpServletResponse.SC_UNAUTHORIZED));
+            // No session will be created or used by spring security
+            http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
-        // Entry points
-        http.authorizeRequests()
-                /*.antMatchers("/**test/**").hasRole("ADMIN1")*/
-                .antMatchers("/**login/**").permitAll()
-                .antMatchers("/**organizations/**").permitAll()
-                .antMatchers("/**users/emailId/**").permitAll()
-                // Disallow everything else..
-                .anyRequest().authenticated();
+            http.exceptionHandling().authenticationEntryPoint((req, rsp, e) -> rsp.sendError(HttpServletResponse.SC_UNAUTHORIZED));
 
-        // Apply JWT
-        http.apply(new JwtTokenFilterConfigurer(jwtTokenProvider));
+            // Entry points
+            http.authorizeRequests()
+                    /*.antMatchers("/**test/**").hasRole("ADMIN1")*/
+                    .antMatchers("/**login/**").permitAll()
+                    .antMatchers("/**organizations/**").permitAll()
+                    .antMatchers("/**users/emailId/**").permitAll()
+                    // Disallow everything else..
+                    .anyRequest().authenticated();
 
-        http.authorizeRequests()
-                .accessDecisionManager(accessDecisionManager(permissionBasedVoter));
+            // Apply JWT
+            http.apply(new JwtTokenFilterConfigurer(jwtTokenProvider));
+
+            http.authorizeRequests()
+                    .accessDecisionManager(accessDecisionManager(permissionBasedVoter));
+        }
     }
 
     /**
      * Overrride default AccessDecisionManager provided by springsecurity
      * in order to implement custom voter- permissionBasedVoter
+     *
      * @return AccessDecisionManager object
      */
     @Bean

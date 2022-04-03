@@ -43,7 +43,7 @@ public class OrderServiceImpl implements OrderService {
         return Optional.empty();
     }
 
-    private Boolean isNotAlreadyBorrowed(Integer bookId, Integer custId) throws Exception {
+    public Boolean isNotAlreadyBorrowed(Integer bookId, Integer custId) throws Exception {
         Optional<Customer> customer = customerRepository.findById(custId);
         if (customer.isPresent()) {
             Customer cust = customer.get();
@@ -56,7 +56,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
-    private Boolean isBookAvailableInLibrary(Integer bookId) throws Exception{
+    public Boolean isBookAvailableInLibrary(Integer bookId) throws Exception{
         Optional<Book> book = bookRepository.findById(bookId);
 
         if (book.isPresent()) {
@@ -70,7 +70,7 @@ public class OrderServiceImpl implements OrderService {
         return Boolean.FALSE;
     }
 
-    private Boolean takeABookFromLibrary(Integer bookId) {
+    public Boolean takeABookFromLibrary(Integer bookId) {
         Optional<Book> book = bookRepository.findById(bookId);
 
         if (book.isPresent()) {
@@ -83,7 +83,7 @@ public class OrderServiceImpl implements OrderService {
         return Boolean.TRUE;
     }
 
-    private Boolean giveTheBookToTheCustomer(Integer bookId, Integer custId) throws Exception {
+    public Boolean giveTheBookToTheCustomer(Integer bookId, Integer custId) throws Exception {
         Optional<Customer> customer = customerRepository.findById(custId);
 
         if (customer.isPresent()) {
@@ -118,7 +118,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
-    private void getTheBookFromCustomer(Integer bookId, Integer customerId) throws Exception {
+    public void getTheBookFromCustomer(Integer bookId, Integer customerId) throws Exception {
         Optional<Customer> customer = customerRepository.findById(customerId);
 
         if (customer.isPresent()) {

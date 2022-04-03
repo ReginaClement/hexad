@@ -1,0 +1,12 @@
+rbac:
+  details:
+    # class : userManagementController
+    - permission: ADMIN
+      urlmapping:
+        '[/api/v1/*]': PUT,POST,GET
+        '[/users/admin]': PUT
+        '[/users/status]': PUT
+        '[/users/approve]': PUT
+        '[/users/reject]': POST
+        '[/users/bulk/removegroup/[0-9]+]': POST
+
